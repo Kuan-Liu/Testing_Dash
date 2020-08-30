@@ -55,7 +55,7 @@ can$population<-37589262
 can$cumulative_testing_per1000<-round(( can$cumulative_testing/ can$population)*1000,3)
 can$testing_per1000<-round(( can$testing/ can$population)*1000,3)
 
-write.csv(can, "can.csv",row.names = F)
+write.csv(can, "docs/can.csv",row.names = F)
 
 
 
@@ -93,7 +93,7 @@ prov$population[prov$province=="Yukon"]<-40854
 prov$cumulative_testing_per1000<-round((prov$cumulative_testing/prov$population)*1000,3)
 prov$testing_per1000<-round((prov$testing/prov$population)*1000,3)
 
-write.csv(prov, "prov.csv",row.names = F)
+write.csv(prov, "docs/prov.csv",row.names = F)
 
 #------------ world data formatting ------------
 
@@ -110,7 +110,7 @@ world_t_clean<- world_t %>% filter(location %in% c("Canada","United States","Uni
 
 world_clean <- world_t_clean[,1:27]
 
-write.csv(world_clean, "world_clean.csv", row.names = F)
+write.csv(world_clean, "docs/world_clean.csv", row.names = F)
 
 
 
@@ -184,7 +184,7 @@ df_trajectory <- df_us %>%
   dplyr::left_join(df_sko, by = "index") %>%
   dplyr::left_join(df_au, by = "index") 
 
-write.csv(df_trajectory, "df_trajectory.csv",row.names = F)
+write.csv(df_trajectory, "docs/df_trajectory.csv",row.names = F)
 
 #------------provincial data this is for the province trajectory plot------------
 #now getting data for provinces, only those with more than 50 deaths;
@@ -225,5 +225,5 @@ df_trajectory_can <- can_cum %>%
   dplyr::left_join(ns_cum, by = "index") 
 
 
-write.csv(df_trajectory_can, "df_trajectory_can.csv",row.names = F)
+write.csv(df_trajectory_can, "docs/df_trajectory_can.csv",row.names = F)
 
