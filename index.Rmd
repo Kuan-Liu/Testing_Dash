@@ -1,16 +1,13 @@
 ---
 title: "COVID-19 Canada Testing"
+runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
-    css: style.css
-    social: menu
-    # source_code: embed
     orientation: rows
     vertical_layout: scroll
     theme: cosmo
     includes:
       after_body: footer.html
-runtime: shiny
 ---
 
 ```{r setup, echo=FALSE,results='hide',message = FALSE, warning = FALSE}
