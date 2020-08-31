@@ -440,10 +440,9 @@ About
 
   - Project Lead, [Kuan Liu](https://twitter.com/KuanLiu2), PhD Candidate in Biostatistics, Dalla Lana School of Public Health, University of Toronto
   - Data Manager, [Thai-Son Tang](https://twitter.com/ThaiSonTang), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto
-  - Survey Leads
-    - [Rose Garrett](https://twitter.com/rose_carrot), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto 
-    - [Alex Bushby](https://twitter.com/bushby_alex), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto
-    - [Maxwell Garrett](https://github.com/maxwell-garrett), Undergraduate student - Computer Science Specialist, Faculty of Arts & Science, University of Toronto
+  - [Rose Garrett](https://twitter.com/rose_carrot), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto 
+  - [Alex Bushby](https://twitter.com/bushby_alex), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto
+  - [Maxwell Garrett](https://github.com/maxwell-garrett), Undergraduate student - Computer Science Specialist, Faculty of Arts & Science, University of Toronto
   - Project Mentors
     - Dr. Eleanor Pullenayegum, Senior Scientist, Child Health Evaluative Sciences, The Hospital for Sick Children
     - Dr. Anna Heath, Scientist, Child Health Evaluative Sciences, The Hospital for Sick Children
