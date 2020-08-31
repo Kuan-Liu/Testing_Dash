@@ -18,7 +18,6 @@ output:
 library(shiny) #shiny app;
 library(flexdashboard) #dashboard;
 library(dplyr) #data tool;
-# library(RCurl) #read data url;
 library(plotly) #visual tool;
 library(tibble) #scrap variable characters;
 library(DT) #Datatable;
@@ -444,7 +443,7 @@ About
   - Survey Leads
     - [Rose Garrett](https://twitter.com/rose_carrot), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto 
     - [Alex Bushby](https://twitter.com/bushby_alex), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto
-    - [Maxwell Garrett](), Undergraduate student - Computer Science Specialist, Faculty of Arts & Science, University of Toronto
+    - [Maxwell Garrett](https://github.com/maxwell-garrett), Undergraduate student - Computer Science Specialist, Faculty of Arts & Science, University of Toronto
   - Project Mentors
     - Dr. Eleanor Pullenayegum, Senior Scientist, Child Health Evaluative Sciences, The Hospital for Sick Children
     - Dr. Anna Heath, Scientist, Child Health Evaluative Sciences, The Hospital for Sick Children
