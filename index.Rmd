@@ -12,13 +12,13 @@ output:
 
 ```{r setup, echo=FALSE,results='hide',message = FALSE, warning = FALSE}
 
-# setwd("C:/DB Mount/GitHub/Testing_Dash") #for Kuan only;
 
+# deployApp("C:/DB Mount/GitHub/Testing_Dash", appName = "Testing_Dash") #for Kuan only;
 #------------------ Packages ------------------
 library(shiny) #shiny app;
 library(flexdashboard) #dashboard;
 library(dplyr) #data tool;
-library(RCurl) #read data url;
+# library(RCurl) #read data url;
 library(plotly) #visual tool;
 library(tibble) #scrap variable characters;
 library(DT) #Datatable;
@@ -34,7 +34,8 @@ prov$date_report<-as.Date(prov$date_report,format="%Y-%m-%d")
 df_trajectory<-read.csv("docs/df_trajectory.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
 df_trajectory_can<-read.csv("docs/df_trajectory_can.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
 
-
+can_testinginfo<-read.csv("docs/can_testinginfo.csv", header = TRUE, sep = ",")
+world_testinginfo<-read.csv("docs/world_testinginfo.csv", header = TRUE, sep = ",")
 
 #------------------ creating New bubble map data;  ------------------
 # instead of using polygon maps, we will display bubble map it reads faster;
@@ -97,7 +98,7 @@ Row
 ### tested {.value-box}
 ```{r}
 valueBox(value = paste(format(max(can$cumulative_testing, na.rm = T), big.mark = ","), "", sep = " "), 
-         caption = "Total Tested Cases", 
+         caption = "Total Tested", 
          icon = "fas fa-user-md", 
          color = tested_color)
 ```
@@ -106,7 +107,7 @@ valueBox(value = paste(format(max(can$cumulative_testing, na.rm = T), big.mark =
 ### tested2 {.value-box}
 ```{r}
 valueBox(value = paste(format(max(can$cumulative_testing_per1000, na.rm = T), big.mark = ","), "", sep = " "), 
-         caption = "Total Tested Cases per 1000", 
+         caption = "Total Tested per 1000", 
          icon = "fas fa-user-md", 
          color = tested_color2)
 ```
@@ -147,6 +148,73 @@ valueBox(value = paste(format(max(can$cumulative_deaths, na.rm = T), big.mark = 
          color = death_color)
 ```
 
+
+
+Row 
+-----------------------------------------------------------------------
+
+### Geographic Mapping on Cumulative Testing per 1000 Population in Canada
+
+```{r}
+
+# Create a color palette with handmade bins.
+mybins <- c(0,60,80,100,120,140,160,180, 200, Inf)
+pal <- colorBin( palette="viridis", domain=canada_region$cumulative_testing_per1000, na.color="transparent", bins=mybins)
+
+renderLeaflet({leaflet(canada_region) %>%
+  addTiles() %>%
+  setView(lat=55, lng=-100, zoom = 3) %>%
+    addCircleMarkers(~lng, ~lat, fillColor = ~pal(cumulative_testing_per1000), fillOpacity = 0.7, color = "red",radius = ~sqrt(cumulative_testing_per1000)*2, stroke = T, weight=2,label = mytext, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "12px", direction = "auto")) %>% addLegend( pal=pal, values=~cumulative_testing_per1000, opacity=0.9, title = "Cumulative Testing per 1000", position = "topright")})
+
+
+```
+
+
+### Confirmed Cases per 1000 Population by Total Tested per 1000 Population as of `r data_date$value`
+
+```{r}
+teamcolour<-c("#000000","#E69F00","#800000","#CC79A7","#56B4E9","#808000","#625D5D","#1589FF","#009E73","#0000A0","#0072B2","#800080","#E56717")
+
+canada_positive<-round(sum(canada_region$cumulative_cases)/sum(canada_region$cumulative_testing)*100,1)
+canada_region$cumulative_cases_per1000<- (round(canada_region$cumulative_cases/canada_region$population, 3))*1000
+x1v<-max(canada_region$cumulative_testing_per1000)
+y1v<-max(canada_region$cumulative_cases_per1000)
+
+plot_ly(data = canada_region, x = ~cumulative_testing_per1000, y = ~cumulative_cases_per1000, 
+        color = ~province, colors = teamcolour, marker = list(size = 10)) %>% 
+  layout( shapes=list(type='line', x0= 0, x1= x1v, y0=0, y1=y1v, line=list(dash='dot', width=2,color="Red")),
+    title=paste("Nationwide Test-Case Ratio at ",canada_positive,"%",sep = ""),
+    xaxis = list(title="Cumulative Testing per 1000 Population"),
+    yaxis = list(title="Cumulative Cases per 1000 Population"))
+
+
+
+```
+
+
+
+Row 
+-----------------------------------------------------------------------
+
+### Canada COVID-19 Data by Province and Territory as of `r data_date$value`
+
+```{r}
+
+
+DT::renderDT(canada_region[,c(1,13,3,4,7,9,6,5,10,11,14)] %>%
+  DT::datatable(rownames = FALSE,
+                colnames = c("Region","Population","Daily New Cases","Cumulative Cases","Active Cases",
+                             "Daily New Deaths", "Cumulative Deaths", "Cumulative Recovered", 
+                             "Daily New Testing",
+                             "Cumulative Testing","Cumulative Testing per 1000 Population"), options = list(order = list(1, 'desc'), searching = FALSE, pageLength = 13), filter = 'none'))
+```
+
+
+
+Trend
+=======================================================================
+
+
 Row
 -----------------------------------------------------------------------
 
@@ -154,16 +222,64 @@ Row
 
 ```{r}
 
+plot_ly(prov, x = ~date_report, y = ~cumulative_testing, color = ~province, 
+        colors = teamcolour, connectgaps = TRUE,  type = 'scatter',mode='lines') %>% 
+  layout( xaxis = list(title = "",showgrid = FALSE),
+         yaxis = list(title = "Cumulative Testing",
+         showgrid = FALSE),hovermode = "compared")
+
 ```
 
-### Daily New Number of Testing Completed in Canada
-
+### Cumulative Number of Testing Completed per 1000 Population in Canada
 
 ```{r}
 
+plot_ly(prov, x = ~date_report, y = ~cumulative_testing_per1000, color = ~province, 
+        colors = teamcolour, connectgaps = TRUE,  type = 'scatter',mode='lines') %>% 
+  layout( xaxis = list(title = "",showgrid = FALSE),
+         yaxis = list(title = "Cumulative Testing per 1000 Population",
+         showgrid = FALSE),hovermode = "compared")
+
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Estimated Daily Number of Testing Completed in Canada
+
+
+```{r}
+prov$testing[prov$testing < 0]<-NA
+plot_ly(prov, x = ~date_report, y = ~testing, color = ~province, 
+        colors = teamcolour, connectgaps = TRUE,  type = 'scatter',mode='lines') %>% 
+  layout( xaxis = list(title = "",showgrid = FALSE),
+         yaxis = list(title = "Estimated Daily Testing",
+         showgrid = FALSE),hovermode = "compared")
+
 ```
 
 
+### Estimated Daily Percentage of Positive Testings
+
+
+```{r}
+prov2<- prov[prov$date_report>as.Date("2020-03-15"),]
+prov2$positve<-round(prov2$cases/prov2$testing,2)*100
+prov2$positve[prov2$positve<0]<-NA
+prov2$positve[prov2$testing==0]<-NA
+prov2$positve[prov2$positve>=100]<-NA
+
+plot_ly(prov2, x = ~date_report, y = ~positve, color = ~province, 
+        colors = teamcolour, connectgaps = TRUE,  type = 'scatter',mode='lines') %>% 
+  layout( xaxis = list(title = "",showgrid = FALSE),
+         yaxis = list(title = "Estimated Daily Percentage of Positives in %",
+         showgrid = FALSE,ticksuffix = '%'),hovermode = "compared")
+
+```
+
+
+Trajectory
+=======================================================================
 
 Row
 -----------------------------------------------------------------------
@@ -293,45 +409,6 @@ plotly::plot_ly(data = df_trajectory_can) %>%
 
 ```
 
-Map
-=======================================================================
-
-Row 
------------------------------------------------------------------------
-
-### Geographic Mapping on Cumulative Testing per 1000 Population in Canada
-
-```{r}
-
-# Create a color palette with handmade bins.
-mybins <- c(0,60,80,100,120,140,160,180, 200, Inf)
-pal <- colorBin( palette="viridis", domain=canada_region$cumulative_testing_per1000, na.color="transparent", bins=mybins)
-
-renderLeaflet({leaflet(canada_region) %>%
-  addTiles() %>%
-  setView(lat=55, lng=-100, zoom = 3) %>%
-    addCircleMarkers(~lng, ~lat, fillColor = ~pal(cumulative_testing_per1000), fillOpacity = 0.7, color = "red",radius = ~sqrt(cumulative_testing_per1000)*2, stroke = T, weight=2,label = mytext, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "12px", direction = "auto")) %>% addLegend( pal=pal, values=~cumulative_testing_per1000, opacity=0.9, title = "Cumulative Testing per 1000", position = "topright")})
-
-
-```
-
-
-Row 
------------------------------------------------------------------------
-
-### Canada COVID-19 Data by Province and Territory as of `r data_date$value`
-
-```{r}
-
-
-DT::renderDT(canada_region[,c(1,13,3,4,7,9,6,5,10,11,14)] %>%
-  DT::datatable(rownames = FALSE,
-                colnames = c("Region","Population","Daily New Cases","Cumulative Cases","Active Cases",
-                             "Daily New Deaths", "Cumulative Deaths", "Cumulative Recovered", 
-                             "Daily New Testing",
-                             "Cumulative Testing","Cumulative Testing per 1000 Population"), options = list(order = list(1, 'desc'), searching = FALSE), filter = 'none'))
-```
-
 
 
 
@@ -345,6 +422,8 @@ DT::renderDT(can[,c(1,4,7,5,6,11,14,12)] %>%
 ```
 
 
+
+
 About
 =======================================================================
 
@@ -352,31 +431,47 @@ About
 **Time of last data update:** `r data_date$value`
 
 
-**Thank you for your interest in our COVID-19 data visualization project.** There are many great COVID-19 Canada dashboards available online. We have compiled the following list to show some of the dashboards that inspired us to build this one. 
 
-- [The COVID-19 Canada Open Data Working Groups dashboard](https://art-bd.shinyapps.io/covid19canada/) developed by [Jean-Paul R. Soucy](https://twitter.com/JPSoucy) and [Isha Berry](https://twitter.com/ishaberry2), two amazing talented students from DLSPH.
+**1. References**
 
-- [Howsmyflattening dashboard](https://howsmyflattening.ca/#/home) by a group of researchers, students and volunteers lead by [Dr. Ali Vahit, Dr. Ben Fine and Dr. Laura Rosella](https://gitlab.com/howsmyflattening/www-howsmyflattening-ca/-/wikis/home). 
+  - Berry I, Soucy J-PR, Tuite A, Fisman D. Open access epidemiologic data and an interactive dashboard to monitor the COVID-19 outbreak in Canada. CMAJ. 2020 Apr 14;192(15):E420. doi: https://doi.org/10.1503/cmaj.75262
+  - World data used in this dashboard are from Our World In Data, https://github.com/owid/covid-19-data/tree/master/public/data/.
+    
+**2. Project Members**
 
-- [The Esri Canada COVID-19 Canada dashboard](https://resources-covid19canada.hub.arcgis.com/).
-
-- [The PHAC COVID-19 Canada dashboard](https://experience.arcgis.com/experience/2f1a13ca0b29422f9b34660f0b705043/).
-
-
-**Acknowledgement**
-
- - **Data** 
-    - Canada data used in this dashboard are extracted from the data posted by the COVID-19 Canada Open Data Working Group (https://github.com/ishaberry/Covid19Canada) lead by [Jean-Paul R. Soucy](https://twitter.com/JPSoucy) and [Isha Berry](https://twitter.com/ishaberry2). Since April 1st, the working group collected and reported case and mortality data directly from Public Health Units. Thus, the case and mortality numbers reported may be higher than those from other sources, including the Ontario Ministry of Health. We direct readers to their dashboard website, [About the data section](https://art-bd.shinyapps.io/covid19canada/) for details.
-    - **We want to express our sincere appreciation to all contributors of the COVID-19 Canada Open Data Working Group.** **Here is a list of contributors we want to pay special tribute to [Isha Berry](https://twitter.com/ishaberry2), [Jean-Paul R. Soucy](https://twitter.com/JPSoucy), [Kamal Acharya](https://twitter.com/Kamalraj_ach), [Gabrielle Brankston](https://twitter.com/GBrankston), [Vinyas Harish](https://twitter.com/VinyasHarish), Kathy Kornas, Thivya Naganathan, Lindsay Obress, [Meghan O'Neill](https://twitter.com/_MeghanONeill), [Tanya Rossi](https://twitter.com/DrTanyaRossi), [Alison Simmons](https://twitter.com/alisonesimmons), [Shelby Sturrock](https://twitter.com/shelbysturrock), Matthew Van Camp, [James E.Wright](https://twitter.com/JWright159) and Wendy Xie.**
-    - World data used in this dashboard are from Our World In Data [website]( https://github.com/owid/covid-19-data/tree/master/public/data/).
- - **Special thanks** Our project mentor**[Dr. Eleanor Pullenayegum](https://twitter.com/EMPullenayegum)** at [Sickkids](http://www.sickkids.ca/AboutSickKids/Directory/People/P/Eleanor-Pullenayegum-staff-profile.html) for her support on all my COVID-19 projects! 
+  - Project Lead, [Kuan Liu](https://twitter.com/KuanLiu2), PhD Candidate in Biostatistics, Dalla Lana School of Public Health, University of Toronto
+  - Data Manager, [Thai-Son Tang](https://twitter.com/ThaiSonTang), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto
+  - Survey Leads
+    - [Rose Garrett](https://twitter.com/rose_carrot), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto 
+    - [Alex Bushby](https://twitter.com/bushby_alex), PhD student in Biostatistics, Dalla Lana School of Public Health, University of Toronto
+    - [Maxwell Garrett](), Undergraduate student - Computer Science Specialist, Faculty of Arts & Science, University of Toronto
+  - Project Mentors
+    - Dr. Eleanor Pullenayegum, Senior Scientist, Child Health Evaluative Sciences, The Hospital for Sick Children
+    - Dr. Anna Heath, Scientist, Child Health Evaluative Sciences, The Hospital for Sick Children
  
-**We would not have made this dashboard if not for the work of the above team and individuals.** You can find the code of this dashboard at <https://github.com/Kuan-Liu/Testing_Dash>.
 
 
-**Feedbacks**
+**3. Feedbacks**
 
-Please feel free to reach me at kuan.liu@mail.utoronto.ca. You can also find me on [Twitter](https://twitter.com/KuanLiu2).
+You can find the code of this dashboard at <https://github.com/Kuan-Liu/Testing_Dash>. Please feel free to reach me at kuan.liu@mail.utoronto.ca. You can also find me on [Twitter](https://twitter.com/KuanLiu2).
 
 
+Row
+-----------------------------------------------------------------------
+
+### A. Testing Unit Information from the COVID-19 Canada Open Data Working Group 	[(Link to Data)](https://github.com/ishaberry/Covid19Canada)
+
+
+```{r}
+names(can_testinginfo)<-c("Provinces and Territories", "Testing Unit", "Testing Info")
+knitr::kable(can_testinginfo)
+```
+
+### B. Testing Unit Information from the Our World in Data COVID-19 data	[(Link to Data)](https://github.com/owid/covid-19-data/tree/master/public/data/)
+
+
+```{r}
+names(world_testinginfo)<-c("Countires", "Testing Unit")
+knitr::kable(world_testinginfo)
+```
 
