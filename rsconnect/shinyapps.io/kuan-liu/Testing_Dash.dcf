@@ -5,6 +5,6 @@ account: kuan-liu
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2726393
-bundleId: 3574396
+bundleId: 3578258
 url: https://kuan-liu.shinyapps.io/Testing_Dash/
-when: 1598848194.9692
+when: 1598930169.95955
