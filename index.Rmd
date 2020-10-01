@@ -8,6 +8,7 @@ output:
     theme: cosmo
     includes:
       after_body: footer.html
+      in_header: google-analytics.html
 ---
 
 ```{r setup, echo=FALSE,results='hide',message = FALSE, warning = FALSE}
@@ -249,7 +250,7 @@ Row
 
 
 ```{r}
-prov$testing[prov$testing < 0]<-NA
+prov$testing[prov$testing <= 0]<-NA
 plot_ly(prov, x = ~date_report, y = ~testing, color = ~province, 
         colors = teamcolour, connectgaps = TRUE,  type = 'scatter',mode='lines') %>% 
   layout( xaxis = list(title = "",showgrid = FALSE),
