@@ -227,3 +227,4 @@ df_trajectory_can <- can_cum %>%
 
 write.csv(df_trajectory_can, "docs/df_trajectory_can.csv",row.names = F)
 
+
