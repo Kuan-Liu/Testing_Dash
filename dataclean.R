@@ -116,6 +116,7 @@ write.csv(world_clean, "docs/world_clean.csv", row.names = F)
 
 
 #------------trajectory data testing since first 100 death ------------
+world_clean$total_tests_per_thousand<- (world_clean$total_tests/(world_clean$total_cases/world_clean$total_cases_per_million))/1000
 
 df_us <- world_clean %>% dplyr::filter( location == "United States") %>%
   dplyr::arrange(date) %>%
