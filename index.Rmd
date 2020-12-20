@@ -159,7 +159,7 @@ Row
 ```{r}
 
 # Create a color palette with handmade bins.
-mybins <- c(0,100,150,200, 250,300,350,Inf)
+mybins <- c(0,100,200, 300,400,Inf)
 pal <- colorBin( palette="viridis", domain=canada_region$cumulative_testing_per1000, na.color="transparent", bins=mybins)
 
 renderLeaflet({leaflet(canada_region) %>%
