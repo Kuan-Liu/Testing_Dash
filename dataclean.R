@@ -1,47 +1,35 @@
 library(dplyr) #data tool;
-library(RCurl) #read data url;
 # setwd("C:/DB Mount/GitHub/Testing_Dash")
 
 #------------------ Read Canada data ------------------
 # #read raw github data from the working group github;
-x1 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_canada/testing_timeseries_canada.csv") #new time series data, apr13;
-x2 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_prov/testing_timeseries_prov.csv") #new time series data, apr13;
-x3 <- getURI("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv")
-# x3 <- getURL("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/testing/covid-testing-all-observations.csv")
-x4 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_canada/cases_timeseries_canada.csv")
-x5 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_canada/active_timeseries_canada.csv")
-x6 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_canada/mortality_timeseries_canada.csv")
-x7 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_prov/cases_timeseries_prov.csv")
-x8 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv")
-x9 <- getURL("https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/timeseries_prov/mortality_timeseries_prov.csv")
 
-
-can_t <- read.csv(text=x1, header = TRUE, sep = ",", encoding = 'UTF-8')
-prov_t <- read.csv(text=x2, header = TRUE, sep = ",", encoding = 'UTF-8')
-world_t <- read.csv(text=x3, header = TRUE, sep = ",", encoding = 'UTF-8')
-can_c <- read.csv(text=x4, header = TRUE, sep = ",", encoding = 'UTF-8')
-can_a <- read.csv(text=x5, header = TRUE, sep = ",", encoding = 'UTF-8')
-can_d <- read.csv(text=x6, header = TRUE, sep = ",", encoding = 'UTF-8')
-prov_c <- read.csv(text=x7, header = TRUE, sep = ",", encoding = 'UTF-8')
-prov_a <- read.csv(text=x8, header = TRUE, sep = ",", encoding = 'UTF-8')
-prov_d <- read.csv(text=x9, header = TRUE, sep = ",", encoding = 'UTF-8')
+can_t <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_canada/testing_timeseries_canada.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+prov_t <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/testing_timeseries_prov.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+world_t <- read.csv("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+can_c <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_canada/cases_timeseries_canada.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+can_a <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_canada/active_timeseries_canada.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+can_d <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_canada/mortality_timeseries_canada.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+prov_c <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/cases_timeseries_prov.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+prov_a <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/active_timeseries_prov.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
+prov_d <- read.csv("https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/timeseries_prov/mortality_timeseries_prov.csv", header = TRUE, sep = ",", encoding = 'UTF-8')
 
 
 `%>%` <- magrittr::`%>%`
 #------------------ canada data formating ------------------
 #format dates;
 
-can_t$date_testing<-as.Date(can_t$date_testing,format="%d-%m-%y")
-prov_t$date_testing<-as.Date(prov_t$date_testing,format="%d-%m-%y")
-world_t$Date<-as.Date(world_t$date,format="%d-%m-%y")
+can_t$date_testing<-as.Date(can_t$date_testing,format="%d-%m-%Y")
+prov_t$date_testing<-as.Date(prov_t$date_testing,format="%d-%m-%Y")
+world_t$Date<-as.Date(world_t$date,format="%d-%m-%Y")
 
-can_c$date_report<-as.Date(can_c$date_report,format="%d-%m-%y")
-can_a$date_active<-as.Date(can_a$date_active,format="%d-%m-%y")
-can_d$date_death_report<-as.Date(can_d$date_death_report,format="%d-%m-%y")
+can_c$date_report<-as.Date(can_c$date_report,format="%d-%m-%Y")
+can_a$date_active<-as.Date(can_a$date_active,format="%d-%m-%Y")
+can_d$date_death_report<-as.Date(can_d$date_death_report,format="%d-%m-%Y")
 
-prov_c$date_report<-as.Date(prov_c$date_report,format="%d-%m-%y")
-prov_a$date_active<-as.Date(prov_a$date_active,format="%d-%m-%y")
-prov_d$date_death_report<-as.Date(prov_d$date_death_report,format="%d-%m-%y")
+prov_c$date_report<-as.Date(prov_c$date_report,format="%d-%m-%Y")
+prov_a$date_active<-as.Date(prov_a$date_active,format="%d-%m-%Y")
+prov_d$date_death_report<-as.Date(prov_d$date_death_report,format="%d-%m-%Y")
 
 
 #merge all data by dates in a canada dataset;
